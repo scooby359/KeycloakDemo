@@ -1,0 +1,41 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password!23
+    networks:
+      - keycloak-network
+
+  mssql-scripts:
+    depends_on:
+      - mssql
+    image: mcr.microsoft.com/mssql-tools
+    networks:
+      - keycloak-network
+    command: /bin/bash -c 'until /opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P "Password!23" -Q "create database Keycloak"; do sleep 5; done'
+
+  keycloak:
+    depends_on:
+      - mssql-scripts
+    image: jboss/keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=mssql
+      - DB_USER=sa
+      - DB_PASSWORD=Password!23
+      - DB_ADDR=mssql 
+      - DB_DATABASE=Keycloak 
+
+    networks:
+      - keycloak-network
+
+networks:
+  keycloak-network: {}
+
+
+
+   
