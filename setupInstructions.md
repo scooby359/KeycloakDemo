@@ -1,0 +1,14 @@
+- Create a new realm, e.g. ApadmiApp
+- Create a new client, e.g. mobileApp
+- Set client to allow username / password sign in and return token:
+  - Go to client settings
+  - Set client protocol to openid-connect
+  - Set access type to public
+- Set custom audience
+  - Go to Client Scopes
+  - Create new scope and save
+  - Select Mappers and create new
+  - Set mapper type to audience
+  - Set Included Custom Audience to client name
+  - Return to Clients, select client, then select Scopes tab
+  - Add newly created scope to Assigned Default Client Scopes 
