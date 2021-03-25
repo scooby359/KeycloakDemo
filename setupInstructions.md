@@ -1,5 +1,5 @@
-- Create a new realm, e.g. ApadmiApp
-- Create a new client, e.g. mobileApp
+- Create a new realm, e.g. myApp
+- Create a new client, e.g. myMobileApp
 - Set client to allow username / password sign in and return token:
   - Go to client settings
   - Set client protocol to openid-connect
