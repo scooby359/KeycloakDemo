@@ -1,53 +1,43 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace SimpleAPI.Controllers
 {
+    // Needed to enforce authentication at class level
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Produces("text/plain")]
     [Route("api/[controller]")]
     [ApiController]
     public class SecretController : ControllerBase
     {
-        // GET: Secret
+        // GET: secret
         [HttpGet]
         public IActionResult Index()
         {
-            var userId = GetUserId();
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return new UnauthorizedResult();
-            }
-
-            var res = "Authorized request successful";
+            var res = $"Authorized request successful for user ID: {User.Identity?.Name}";
             return new OkObjectResult(res);
         }
 
-        // GET: Secret/User
+        // GET: secret/userdetails
         [HttpGet("userdetails")]
         public IActionResult UserDetails()
         {
-            var userId = GetUserId();
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return new UnauthorizedResult();
-            }
-
             var res = User.Claims.Aggregate("UserDetails Request successful\n\nClaims:\n", (current, userClaim) => current + $"{userClaim.Type}: {userClaim.Value}\n");
 
             return new OkObjectResult(res);
         }
 
-        public string GetUserId()
+        // GET: secret/admin
+        [HttpGet("admin")]
+        // Restrict to users with admin role
+        [Authorize(Roles = "admin")]
+        public IActionResult Admin()
         {
-            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            const string res = "Admin endpoint authorized";
+
+            return new OkObjectResult(res);
         }
 
     }
